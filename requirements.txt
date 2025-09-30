@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+paho-mqtt
+sqlalchemy
+aiosqlite
+httpx
+python-dotenv
+twilio
