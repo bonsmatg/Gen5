@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  orchestrator:
+    build: .
+    container_name: jarvis_orchestrator
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - mqtt
+    ports:
+      - "8000:8000"
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: jarvis_mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto_data:/mosquitto/data
+      - ./mosquitto_log:/mosquitto/log
