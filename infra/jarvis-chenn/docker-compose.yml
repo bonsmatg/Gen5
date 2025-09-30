@@ -1,0 +1,24 @@
+version: '3'
+services:
+  orchestrator:
+    build: ./orchestrator
+    volumes:
+      - ./orchestrator:/app
+    environment:
+      - MQTT_BROKER=mosquitto
+      - SQLITE_DB=/data/db.sqlite
+  
+  mosquitto:
+    image: eclipse-mosquitto
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
+      
+  db:
+    image: nouchka/sqlite3
+    volumes:
+      - db_data:/data
+  
+volumes:
+  db_data:
