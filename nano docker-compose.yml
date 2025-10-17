@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: jarvis_ipfs
+    ports:
+      - "4001:4001"      # Swarm
+      - "5001:5001"      # API
+      - "8080:8080"      # Gateway
+    volumes:
+      - ./ipfs-data:/data/ipfs
+    restart: always
+
+  aggregator:
+    build: ./aggregator
+    container_name: jarvis_aggregator
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./aggregator/.env
+    volumes:
+      - ./aggregator/models:/app/models
+      - ./aggregator/logs:/app/logs
+    depends_on:
+      - ipfs
+    restart: on-failure
+
+  dashboard:
+    build: ./dashboard
+    container_name: jarvis_dashboard
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./dashboard/.env
+    volumes:
+      - ./dashboard/data:/app/data
+    depends_on:
+      - aggregator
+      - ipfs
+    restart: on-failure
+
+  client:
+    build: ./client
+    container_name: jarvis_client
+    env_file:
+      - ./client/.env
+    volumes:
+      - ./client/models:/app/models
+      - ./client/logs:/app/logs
+    depends_on:
+      - aggregator
+      - ipfs
+    restart: unless-stopped
